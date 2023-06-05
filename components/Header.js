@@ -2,13 +2,21 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
-	HomeIcon,
+  HomeIcon,
   MagnifyingGlassIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { modalState } from "../atom/modalAtom";
+import { useRecoilState } from "recoil";
 
 export default function Header() {
   const router = useRouter();
+  const { data: session } = useSession();
+  console.log(session);
+
+  const [open, setOpen] = useRecoilState(modalState);
+
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
@@ -18,6 +26,7 @@ export default function Header() {
             fill
             className="object-contain"
             alt="Instagram logo"
+            onClick={() => router.push("/")}
           />
         </div>
         <div className="cursor-pointer h-24 w-10 relative  lg:hidden">
@@ -26,6 +35,7 @@ export default function Header() {
             fill
             className="object-contain"
             alt="Instagram logo"
+            onClick={() => router.push("/")}
           />
         </div>
         {/* Middle */}
@@ -45,36 +55,24 @@ export default function Header() {
             onClick={() => router.push("/")}
             className="hidden md:inline-flex  h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"
           />
-          {true ? (
+          {session ? (
             <>
               <PlusCircleIcon
+                onClick={() => setOpen(true)}
                 className="h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"
               />
               <img
-                src={"https://www.thejamespark.com/img-backgrounds/proflie_picture.png"}
+                onClick={() => signOut()}
+                src={session.user.image}
                 alt="user-image"
                 className="h-10 rounded-full cursor-pointer"
               />
             </>
           ) : (
-            <button onClick={() => router.push("/auth/signin")}>Sign in</button>
+            <button onClick={() => signIn()}>Sign in</button>
           )}
         </div>
       </div>
     </div>
   );
 }
-
-// 'use client';
-
-// import { useRouter } from 'next/navigation';
-
-// export default function Page() {
-//   const router = useRouter();
-
-//   return (
-//     <button type="button" onClick={() => router.push('/dashboard')}>
-//       Dashboard
-//     </button>
-//   );
-// }

@@ -1,7 +1,11 @@
+"use client";
 import Post from "./Post";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../firebase";
+import { useEffect, useState } from "react";
 
 export default function Posts() {
-  const posts = [
+  const postsMock = [
     {
       id: "1",
       username: "jamespark",
@@ -43,9 +47,30 @@ export default function Posts() {
       caption: "Pretty picture",
     },
   ];
+
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(collection(db, "posts"), orderBy("timestamp", "desc")),
+      (snapshot) => {
+        setDocs(snapshot.docs);
+      }
+    );
+    return unsubscribe;
+  }, [db]);
   return (
     <div>
-      {posts.map((post) => (
+      {docs.map((doc) => (
+        <Post
+          key={doc.id}
+          id={doc.id}
+          username={doc.data().username}
+          userImg={doc.data().profileImg}
+          img={doc.data().image}
+          caption={doc.data().caption}
+        />
+      ))}
+      {postsMock.map((post) => (
         <Post
           key={post.id}
           id={post.id}
