@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 export default function MiniProfile() {
   const { data: session } = useSession();
   const onSignOut = () => {
-    signOut(auth);
+    signOut();
   };
   return (
     <div className="flex items-center justify-between mt-14 ml-10">
